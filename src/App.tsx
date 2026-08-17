@@ -149,7 +149,12 @@ function App(): JSX.Element {
     <div className="app">
       <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-top">
-          <button className="icon-btn collapse-btn" onClick={toggleCollapsed} title={collapsed ? t('nav.recents') : ''}>
+          <button
+            className="icon-btn collapse-btn"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? t('nav.expand') : t('nav.collapse')}
+            title={collapsed ? t('nav.expand') : t('nav.collapse')}
+          >
             <Icon name={collapsed ? 'chevron-right' : 'chevron-left'} size={18} />
           </button>
           <button className="new-chat-btn" onClick={startNewChat} title={t('chat.newChat')}>

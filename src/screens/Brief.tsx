@@ -30,12 +30,17 @@ function Section({ label, items }: { label: string; items: Reminder[] }): JSX.El
 function Brief(): JSX.Element {
   const { t } = useTranslation()
   const [items, setItems] = useState<Reminder[]>([])
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
     void window.toqi.reminders.list().then(setItems)
   }, [])
 
-  const now = Date.now()
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 30000)
+    return () => clearInterval(id)
+  }, [])
+
   const act = items.filter((r) => !r.done && new Date(r.due_at).getTime() <= now)
   const watch = items.filter((r) => !r.done && new Date(r.due_at).getTime() > now)
   const settled = items.filter((r) => r.done)

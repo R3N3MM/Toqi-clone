@@ -24,7 +24,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Coming soon',
     'chat.attach': 'Attach',
     'chat.gallery': 'Gallery',
-    'chat.file': 'File'
+    'chat.file': 'File',
+    'nav.collapse': 'Collapse sidebar',
+    'nav.expand': 'Expand sidebar',
+    'auth.saveFailed': 'Could not save your name. Please try again.',
+    'chat.image': 'Image',
   },
   ar: {
     'nav.mystuff': 'أشيائي',
@@ -49,7 +53,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'قريباً',
     'chat.attach': 'إرفاق',
     'chat.gallery': 'المعرض',
-    'chat.file': 'ملف'
+    'chat.file': 'ملف',
+    'nav.collapse': 'طي الشريط الجانبي',
+    'nav.expand': 'توسيع الشريط الجانبي',
+    'auth.saveFailed': 'تعذر حفظ اسمك. حاول مرة أخرى.',
+    'chat.image': 'صورة'
   },
   zh: {
     'nav.mystuff': '我的内容',
@@ -74,7 +82,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': '即将推出',
     'chat.attach': '附件',
     'chat.gallery': '相册',
-    'chat.file': '文件'
+    'chat.file': '文件',
+    'nav.collapse': '收起侧边栏',
+    'nav.expand': '展开侧边栏',
+    'auth.saveFailed': '无法保存您的姓名，请重试。',
+    'chat.image': '图片'
   },
   hi: {
     'nav.mystuff': 'मेरी चीज़ें',
@@ -99,7 +111,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'जल्द आ रहा है',
     'chat.attach': 'संलग्न करें',
     'chat.gallery': 'गैलरी',
-    'chat.file': 'फ़ाइल'
+    'chat.file': 'फ़ाइल',
+    'nav.collapse': 'साइडबार बंद करें',
+    'nav.expand': 'साइडबार खोलें',
+    'auth.saveFailed': 'आपका नाम सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।',
+    'chat.image': 'छवि'
   },
   es: {
     'nav.mystuff': 'Mis cosas',
@@ -124,7 +140,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Próximamente',
     'chat.attach': 'Adjuntar',
     'chat.gallery': 'Galería',
-    'chat.file': 'Archivo'
+    'chat.file': 'Archivo',
+    'nav.collapse': 'Contraer barra lateral',
+    'nav.expand': 'Expandir barra lateral',
+    'auth.saveFailed': 'No se pudo guardar tu nombre. Inténtalo de nuevo.',
+    'chat.image': 'Imagen'
   },
   fr: {
     'nav.mystuff': 'Mes affaires',
@@ -149,7 +169,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Bientôt',
     'chat.attach': 'Joindre',
     'chat.gallery': 'Galerie',
-    'chat.file': 'Fichier'
+    'chat.file': 'Fichier',
+    'nav.collapse': 'Réduire la barre latérale',
+    'nav.expand': 'Déplier la barre latérale',
+    'auth.saveFailed': 'Impossible d’enregistrer votre nom. Veuillez réessayer.',
+    'chat.image': 'Image'
   },
   de: {
     'nav.mystuff': 'Meine Sachen',
@@ -174,7 +198,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Demnächst',
     'chat.attach': 'Anhängen',
     'chat.gallery': 'Galerie',
-    'chat.file': 'Datei'
+    'chat.file': 'Datei',
+    'nav.collapse': 'Seitenleiste einklappen',
+    'nav.expand': 'Seitenleiste ausklappen',
+    'auth.saveFailed': 'Ihr Name konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.',
+    'chat.image': 'Bild'
   },
   pt: {
     'nav.mystuff': 'Minhas coisas',
@@ -199,7 +227,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Em breve',
     'chat.attach': 'Anexar',
     'chat.gallery': 'Galeria',
-    'chat.file': 'Arquivo'
+    'chat.file': 'Arquivo',
+    'nav.collapse': 'Recolher barra lateral',
+    'nav.expand': 'Expandir barra lateral',
+    'auth.saveFailed': 'Não foi possível salvar seu nome. Tente novamente.',
+    'chat.image': 'Imagem'
   },
   ru: {
     'nav.mystuff': 'Моё',
@@ -224,7 +256,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Скоро',
     'chat.attach': 'Прикрепить',
     'chat.gallery': 'Галерея',
-    'chat.file': 'Файл'
+    'chat.file': 'Файл',
+    'nav.collapse': 'Свернуть боковую панель',
+    'nav.expand': 'Развернуть боковую панель',
+    'auth.saveFailed': 'Не удалось сохранить ваше имя. Попробуйте ещё раз.',
+    'chat.image': 'Изображение'
   },
   ja: {
     'nav.mystuff': 'マイもの',
@@ -249,7 +285,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': '近日公開',
     'chat.attach': '添付',
     'chat.gallery': 'ギャラリー',
-    'chat.file': 'ファイル'
+    'chat.file': 'ファイル',
+    'nav.collapse': 'サイドバーを折りたたむ',
+    'nav.expand': 'サイドバーを展開',
+    'auth.saveFailed': '名前を保存できませんでした。もう一度お試しください。',
+    'chat.image': '画像'
   },
   ko: {
     'nav.mystuff': '내 것',
@@ -274,7 +314,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': '출시 예정',
     'chat.attach': '첨부',
     'chat.gallery': '갤러리',
-    'chat.file': '파일'
+    'chat.file': '파일',
+    'nav.collapse': '사이드바 접기',
+    'nav.expand': '사이드바 펼치기',
+    'auth.saveFailed': '이름을 저장하지 못했습니다. 다시 시도해 주세요.',
+    'chat.image': '이미지'
   },
   tr: {
     'nav.mystuff': 'Benim Şeylerim',
@@ -299,7 +343,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Yakında',
     'chat.attach': 'Ekle',
     'chat.gallery': 'Galeri',
-    'chat.file': 'Dosya'
+    'chat.file': 'Dosya',
+    'nav.collapse': 'Kenar çubuğunu daralt',
+    'nav.expand': 'Kenar çubuğunu genişlet',
+    'auth.saveFailed': 'Adınız kaydedilemedi. Lütfen tekrar deneyin.',
+    'chat.image': 'Görsel'
   },
   id: {
     'nav.mystuff': 'Barang Saya',
@@ -324,7 +372,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Segera hadir',
     'chat.attach': 'Lampirkan',
     'chat.gallery': 'Galeri',
-    'chat.file': 'Berkas'
+    'chat.file': 'Berkas',
+    'nav.collapse': 'Ciutkan bilah sisi',
+    'nav.expand': 'Perluas bilah sisi',
+    'auth.saveFailed': 'Nama Anda tidak dapat disimpan. Silakan coba lagi.',
+    'chat.image': 'Gambar'
   },
   it: {
     'nav.mystuff': 'Le mie cose',
@@ -349,7 +401,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Prossimamente',
     'chat.attach': 'Allega',
     'chat.gallery': 'Galleria',
-    'chat.file': 'File'
+    'chat.file': 'File',
+    'nav.collapse': 'Comprimi barra laterale',
+    'nav.expand': 'Espandi barra laterale',
+    'auth.saveFailed': 'Impossibile salvare il tuo nome. Riprova.',
+    'chat.image': 'Immagine'
   },
   nl: {
     'nav.mystuff': 'Mijn spullen',
@@ -374,7 +430,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Binnenkort',
     'chat.attach': 'Bijvoegen',
     'chat.gallery': 'Galerij',
-    'chat.file': 'Bestand'
+    'chat.file': 'Bestand',
+    'nav.collapse': 'Zijbalk inklappen',
+    'nav.expand': 'Zijbalk uitklappen',
+    'auth.saveFailed': 'Je naam kon niet worden opgeslagen. Probeer het opnieuw.',
+    'chat.image': 'Afbeelding'
   },
   pl: {
     'nav.mystuff': 'Moje rzeczy',
@@ -399,7 +459,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Wkrótce',
     'chat.attach': 'Załącz',
     'chat.gallery': 'Galeria',
-    'chat.file': 'Plik'
+    'chat.file': 'Plik',
+    'nav.collapse': 'Zwiń pasek boczny',
+    'nav.expand': 'Rozwiń pasek boczny',
+    'auth.saveFailed': 'Nie udało się zapisać Twojego imienia. Spróbuj ponownie.',
+    'chat.image': 'Obraz'
   },
   vi: {
     'nav.mystuff': 'Của tôi',
@@ -424,7 +488,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Sắp ra mắt',
     'chat.attach': 'Đính kèm',
     'chat.gallery': 'Thư viện',
-    'chat.file': 'Tệp'
+    'chat.file': 'Tệp',
+    'nav.collapse': 'Thu gọn thanh bên',
+    'nav.expand': 'Mở rộng thanh bên',
+    'auth.saveFailed': 'Không thể lưu tên của bạn. Vui lòng thử lại.',
+    'chat.image': 'Hình ảnh'
   },
   th: {
     'nav.mystuff': 'ของฉัน',
@@ -449,7 +517,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'เร็ว ๆ นี้',
     'chat.attach': 'แนบ',
     'chat.gallery': 'แกลเลอรี',
-    'chat.file': 'ไฟล์'
+    'chat.file': 'ไฟล์',
+    'nav.collapse': 'ย่อแถบด้านข้าง',
+    'nav.expand': 'ขยายแถบด้านข้าง',
+    'auth.saveFailed': 'ไม่สามารถบันทึกชื่อของคุณได้ โปรดลองอีกครั้ง',
+    'chat.image': 'รูปภาพ'
   },
   sw: {
     'nav.mystuff': 'Vitu Vyangu',
@@ -474,7 +546,11 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'Inakuja karibuni',
     'chat.attach': 'Ambatisha',
     'chat.gallery': 'Nyumba ya picha',
-    'chat.file': 'Faili'
+    'chat.file': 'Faili',
+    'nav.collapse': 'Kunja upau wa pembeni',
+    'nav.expand': 'Panua upau wa pembeni',
+    'auth.saveFailed': 'Haikuweza kuhifadhi jina lako. Tafadhali jaribu tena.',
+    'chat.image': 'Picha'
   },
   fa: {
     'nav.mystuff': 'چیزهای من',
@@ -499,6 +575,10 @@ export const EXTRA2: Record<string, Dict> = {
     'common.comingSoon': 'به زودی',
     'chat.attach': 'پیوست',
     'chat.gallery': 'گالری',
-    'chat.file': 'فایل'
+    'chat.file': 'فایل',
+    'nav.collapse': 'جمع‌کردن نوار کناری',
+    'nav.expand': 'بازکردن نوار کناری',
+    'auth.saveFailed': 'نام شما ذخیره نشد. لطفاً دوباره تلاش کنید.',
+    'chat.image': 'تصویر'
   }
 }
