@@ -11,9 +11,10 @@ interface SettingsProps {
   user: PublicUser | null
   onSignOut: () => void
   onRestartOnboarding: () => void
+  focus?: 'wa' | 'oauth'
 }
 
-export default function Settings({ user, onSignOut, onRestartOnboarding }: SettingsProps): JSX.Element {
+export default function Settings({ user, onSignOut, onRestartOnboarding, focus }: SettingsProps): JSX.Element {
   const { t, i18n } = useTranslation()
   const toast = useToast()
   const { mode, accent, setMode, setAccent } = useTheme()
@@ -71,6 +72,12 @@ export default function Settings({ user, onSignOut, onRestartOnboarding }: Setti
       off()
     }
   }, [])
+
+  useEffect(() => {
+    if (!focus) return
+    const el = document.getElementById(focus === 'wa' ? 'settings-card-wa' : 'settings-card-oauth')
+    if (el) el.scrollIntoView({ block: 'start' })
+  }, [focus])
 
   const saveSettings = async (): Promise<void> => {
     await window.toqi.settings.save(settings)
@@ -290,7 +297,7 @@ export default function Settings({ user, onSignOut, onRestartOnboarding }: Setti
           )}
         </div>
 
-        <div className="card">
+        <div className="card" id="settings-card-oauth">
           <h4>Google / Microsoft OAuth</h4>
           <p className="small muted">{t('settings.oauthHint')}</p>
           <label>{t('settings.googleClientId')}</label>
@@ -302,7 +309,7 @@ export default function Settings({ user, onSignOut, onRestartOnboarding }: Setti
           <button className="btn btn-primary" onClick={() => void saveOauth()}>{t('settings.save')}</button>
         </div>
 
-        <div className="card">
+        <div className="card" id="settings-card-wa">
           <h4>WhatsApp</h4>
           <p className="small muted">{t('settings.waHint')}</p>
           {waState === 'ready' ? (

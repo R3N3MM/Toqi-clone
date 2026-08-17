@@ -56,8 +56,22 @@ export function notesDir(): string {
   return path.join(app.getPath('userData'), 'notes')
 }
 
+// Resolve an incoming path against notesDir() and reject anything that escapes
+// it. All files read from or written by the notes feature (generated .md files
+// and staged PDF imports) live under this directory.
+export function confineToNotesDir(filePath: string): string {
+  const dir = path.resolve(notesDir())
+  const resolved = path.resolve(dir, filePath)
+  const rel = path.relative(dir, resolved)
+  if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) {
+    throw new Error('Path is outside the notes directory.')
+  }
+  return resolved
+}
+
 export async function extractPdf(filePath: string): Promise<ExtractionResult> {
-  const buffer = await fs.readFile(filePath)
+  const confined = confineToNotesDir(filePath)
+  const buffer = await fs.readFile(confined)
   const parsed = await pdfParse(buffer)
 
   const pages: PdfPage[] = (parsed.text || '')
@@ -247,11 +261,13 @@ export function listNotes(): NoteRecord[] {
 }
 
 export async function readNoteFile(filePath: string): Promise<string> {
-  return fs.readFile(filePath, 'utf-8')
+  const confined = confineToNotesDir(filePath)
+  return fs.readFile(confined, 'utf-8')
 }
 
 export async function deleteNote(id: number, filePath: string): Promise<void> {
+  const confined = confineToNotesDir(filePath)
   await db.run('DELETE FROM notes WHERE id = ?', [id])
   await db.save()
-  await fs.unlink(filePath).catch(() => undefined)
+  await fs.unlink(confined).catch(() => undefined)
 }

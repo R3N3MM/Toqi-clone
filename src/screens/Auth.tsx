@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PublicUser } from '../../electron/types'
 import { Icon } from '../components/icons'
@@ -13,16 +13,9 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [onboardingName, setOnboardingName] = useState(user?.name ?? '')
-
-  useEffect(() => {
-    if (user && localStorage.getItem('toqi-onboarded') === '1') {
-      onDone(user)
-    }
-  }, [user, onDone])
 
   async function handleLocal(e: React.FormEvent): Promise<void> {
     e.preventDefault()
@@ -30,7 +23,7 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
     setBusy(true)
     try {
       if (mode === 'signup') {
-        const u = await window.toqi.auth.signup(email.trim(), password, name.trim())
+        const u = await window.toqi.auth.signup(email.trim(), password, '')
         onDone(u)
       } else {
         const u = await window.toqi.auth.signin(email.trim(), password)
@@ -86,8 +79,7 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
         // ignore
       }
     }
-    localStorage.setItem('toqi-onboarded', '1')
-    onDone(user ?? { id: 0, email: '', name: finalName, provider: 'local', avatar: '' })
+    onDone(user ? { ...user, name: finalName } : { id: 0, email: '', name: finalName, provider: 'local', avatar: '' })
   }
 
   if (user) {
@@ -108,13 +100,10 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
               placeholder={t('auth.name')}
               autoFocus
             />
-            <button className="btn btn-primary" type="submit" disabled={busy}>
+            <button className="btn btn-primary" type="submit" disabled={busy || !onboardingName.trim()}>
               {t('auth.onbContinue')}
             </button>
           </form>
-          <button className="link-btn" onClick={() => handleOnboarding({ preventDefault: () => undefined } as React.FormEvent)}>
-            {t('auth.skip')}
-          </button>
         </div>
       </div>
     )
@@ -131,9 +120,6 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
         <p className="auth-sub">{t('auth.tagline')}</p>
 
         <form onSubmit={handleLocal} className="auth-form">
-          {mode === 'signup' && (
-            <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('auth.name')} />
-          )}
           <input
             className="input"
             type="email"

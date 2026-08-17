@@ -21,10 +21,12 @@ export default function Chat({ initialConversationId = null }: ChatProps): JSX.E
   const [showCamera, setShowCamera] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showAttach, setShowAttach] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileAnyRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const streamingRef = useRef('')
   const toolStatusRef = useRef<string | null>(null)
@@ -290,6 +292,16 @@ export default function Chat({ initialConversationId = null }: ChatProps): JSX.E
         }}
       />
 
+      <input
+        ref={fileAnyRef}
+        type="file"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files) readFiles(e.target.files)
+          e.target.value = ''
+        }}
+      />
+
       {attachments.length > 0 && (
         <div className="attach-row">
           {attachments.map((src, i) => (
@@ -304,12 +316,39 @@ export default function Chat({ initialConversationId = null }: ChatProps): JSX.E
       )}
 
       <div className="composer">
-        <button className="icon-btn" title={t('chat.camera')} onClick={() => void startCamera()}>
-          <Icon name="camera" size={20} />
-        </button>
-        <button className="icon-btn" title={t('chat.gallery')} onClick={() => fileInputRef.current?.click()}>
-          <Icon name="image" size={20} />
-        </button>
+        <div className="attach-wrap">
+          <button className="icon-btn" title={t('chat.attach')} onClick={() => setShowAttach((v) => !v)}>
+            <Icon name="plus" size={20} />
+          </button>
+          {showAttach && (
+            <div className="attach-menu">
+              <button
+                onClick={() => {
+                  setShowAttach(false)
+                  void startCamera()
+                }}
+              >
+                <Icon name="camera" size={18} /> {t('chat.camera')}
+              </button>
+              <button
+                onClick={() => {
+                  setShowAttach(false)
+                  fileInputRef.current?.click()
+                }}
+              >
+                <Icon name="image" size={18} /> {t('chat.gallery')}
+              </button>
+              <button
+                onClick={() => {
+                  setShowAttach(false)
+                  fileAnyRef.current?.click()
+                }}
+              >
+                <Icon name="file" size={18} /> {t('chat.file')}
+              </button>
+            </div>
+          )}
+        </div>
         <textarea
           className="chat-input"
           value={input}

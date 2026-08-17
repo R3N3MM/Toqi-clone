@@ -2071,8 +2071,9 @@ export const resources: Record<string, { translation: Dict }> = {
 }
 
 import { EXTRA } from './i18n-extra'
+import { EXTRA2 } from './i18n-extra2'
 for (const code of Object.keys(resources)) {
-  resources[code].translation = { ...resources[code].translation, ...(EXTRA[code] ?? {}) }
+  resources[code].translation = { ...resources[code].translation, ...(EXTRA[code] ?? {}), ...(EXTRA2[code] ?? {}) }
 }
 
 void i18n.use(initReactI18next).init({

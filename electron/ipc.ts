@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, dialog, ipcMain, shell, type IpcMainInvokeEvent } from 'electron'
 import { promises as fs } from 'fs'
 import path from 'path'
 import type { AiSettings, EmailDraft, NoteRecord, SmtpConfig } from './types'
@@ -24,6 +24,7 @@ import {
   testSmtp
 } from './mail'
 import {
+  confineToNotesDir,
   extractPdf,
   generateNotes,
   listNotes,
@@ -81,17 +82,34 @@ import {
 import { runConversation } from './agent'
 
 export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: () => WhatsAppManager): void {
+  // Reject any IPC call that does not originate from the main frame of the main
+  // window. A compromised or injected renderer in another window/frame cannot
+  // invoke handlers this way.
+  function trustedSender(e: IpcMainInvokeEvent): boolean {
+    const win = getMainWindow()
+    if (!win || win.isDestroyed() || e.sender !== win.webContents) return false
+    const frame = e.senderFrame
+    return frame === win.webContents.mainFrame
+  }
+
+  function safeHandle(channel: string, listener: (e: IpcMainInvokeEvent, ...args: any[]) => unknown): void {
+    ipcMain.handle(channel, (e, ...args) => {
+      if (!trustedSender(e)) throw new Error('Unauthorized IPC call.')
+      return listener(e, ...args)
+    })
+  }
+
   // --- AI / Ollama ---
-  ipcMain.handle('ollama:status', async () => {
+  safeHandle('ollama:status', async () => {
     return { running: await isOllamaRunning(), base: OLLAMA_BASE }
   })
-  ipcMain.handle('ollama:models', async () => {
+  safeHandle('ollama:models', async () => {
     return listModels()
   })
-  ipcMain.handle('ollama:defaultModel', async () => {
+  safeHandle('ollama:defaultModel', async () => {
     return getDefaultModel()
   })
-  ipcMain.handle('ollama:generate', async (_e, payload: { task: string; prompt: string; context?: string }) => {
+  safeHandle('ollama:generate', async (_e, payload: { task: string; prompt: string; context?: string }) => {
     const settings = getAiSettings()
     const model = settings.model || (await getDefaultModel())
     if (!model) throw new Error('No Ollama model selected.')
@@ -110,45 +128,45 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
   })
 
   // --- Settings ---
-  ipcMain.handle('settings:get', async () => getAiSettings())
-  ipcMain.handle('settings:save', async (_e, s: AiSettings) => {
+  safeHandle('settings:get', async () => getAiSettings())
+  safeHandle('settings:save', async (_e, s: AiSettings) => {
     await saveAiSettings(s)
   })
-  ipcMain.handle('settings:getLang', async () => getUiLanguage())
-  ipcMain.handle('settings:setLang', async (_e, lang: string) => {
+  safeHandle('settings:getLang', async () => getUiLanguage())
+  safeHandle('settings:setLang', async (_e, lang: string) => {
     await saveUiLanguage(lang)
   })
-  ipcMain.handle('settings:getMode', async () => getThemeMode())
-  ipcMain.handle('settings:setMode', async (_e, mode: 'light' | 'dark') => {
+  safeHandle('settings:getMode', async () => getThemeMode())
+  safeHandle('settings:setMode', async (_e, mode: 'light' | 'dark') => {
     await saveThemeMode(mode)
   })
-  ipcMain.handle('settings:getAccent', async () => getThemeAccent())
-  ipcMain.handle('settings:setAccent', async (_e, accent: string) => {
+  safeHandle('settings:getAccent', async () => getThemeAccent())
+  safeHandle('settings:setAccent', async (_e, accent: string) => {
     await saveThemeAccent(accent)
   })
-  ipcMain.handle('settings:getPrefs', async () => getPrefs())
-  ipcMain.handle('settings:setPrefs', async (_e, prefs: { location: string; notifications: boolean }) => {
+  safeHandle('settings:getPrefs', async () => getPrefs())
+  safeHandle('settings:setPrefs', async (_e, prefs: { location: string; notifications: boolean }) => {
     await savePrefs(prefs)
   })
 
   // --- Auth ---
-  ipcMain.handle('auth:current', async () => getCurrentUser())
-  ipcMain.handle('auth:signup', async (_e, email: string, password: string, name: string) => signUpLocal(email, password, name))
-  ipcMain.handle('auth:signin', async (_e, email: string, password: string) => signInLocal(email, password))
-  ipcMain.handle('auth:signout', async () => signOut())
-  ipcMain.handle('auth:updateName', async (_e, id: number, name: string) => updateUserName(id, name))
-  ipcMain.handle('auth:changePassword', async (_e, id: number, current: string, next: string) => changePassword(id, current, next))
-  ipcMain.handle('auth:deleteAccount', async (_e, id: number) => deleteAccount(id))
-  ipcMain.handle('auth:google', async () => {
+  safeHandle('auth:current', async () => getCurrentUser())
+  safeHandle('auth:signup', async (_e, email: string, password: string, name: string) => signUpLocal(email, password, name))
+  safeHandle('auth:signin', async (_e, email: string, password: string) => signInLocal(email, password))
+  safeHandle('auth:signout', async () => signOut())
+  safeHandle('auth:updateName', async (_e, id: number, name: string) => updateUserName(id, name))
+  safeHandle('auth:changePassword', async (_e, id: number, current: string, next: string) => changePassword(id, current, next))
+  safeHandle('auth:deleteAccount', async (_e, id: number) => deleteAccount(id))
+  safeHandle('auth:google', async () => {
     const profile = await loginWithGoogle()
     return signInProvider(profile.provider, profile.email, profile.name, profile.avatar)
   })
-  ipcMain.handle('auth:microsoft', async () => {
+  safeHandle('auth:microsoft', async () => {
     const profile = await loginWithMicrosoft()
     return signInProvider(profile.provider, profile.email, profile.name, profile.avatar)
   })
-  ipcMain.handle('auth:oauthConfig', async (_e, provider: 'google' | 'microsoft') => getOAuthConfig(provider))
-  ipcMain.handle('auth:saveOauthConfig', async (_e, provider: 'google' | 'microsoft', clientId: string, clientSecret: string) =>
+  safeHandle('auth:oauthConfig', async (_e, provider: 'google' | 'microsoft') => getOAuthConfig(provider))
+  safeHandle('auth:saveOauthConfig', async (_e, provider: 'google' | 'microsoft', clientId: string, clientSecret: string) =>
     saveOAuthConfig(provider, clientId, clientSecret)
   )
 
@@ -158,25 +176,25 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
     if (!user) throw new Error('Not signed in.')
     return user
   }
-  ipcMain.handle('conversations:create', async (_e, title?: string) => createConversation((await requireUser()).id, title))
-  ipcMain.handle('conversations:list', async () => listConversations((await requireUser()).id))
-  ipcMain.handle('conversations:get', async (_e, id: number) => getConversation((await requireUser()).id, id))
-  ipcMain.handle('conversations:messages', async (_e, id: number) => getMessages(id))
-  ipcMain.handle('conversations:rename', async (_e, id: number, title: string) =>
+  safeHandle('conversations:create', async (_e, title?: string) => createConversation((await requireUser()).id, title))
+  safeHandle('conversations:list', async () => listConversations((await requireUser()).id))
+  safeHandle('conversations:get', async (_e, id: number) => getConversation((await requireUser()).id, id))
+  safeHandle('conversations:messages', async (_e, id: number) => getMessages(id))
+  safeHandle('conversations:rename', async (_e, id: number, title: string) =>
     setConversationTitle((await requireUser()).id, id, title)
   )
-  ipcMain.handle('conversations:delete', async (_e, id: number) => deleteConversation((await requireUser()).id, id))
+  safeHandle('conversations:delete', async (_e, id: number) => deleteConversation((await requireUser()).id, id))
 
   // --- Calendar / Reminders ---
-  ipcMain.handle('reminders:add', async (_e, r: { title: string; dueAt: string; type: Reminder['type']; note?: string }) =>
+  safeHandle('reminders:add', async (_e, r: { title: string; dueAt: string; type: Reminder['type']; note?: string }) =>
     addReminder((await requireUser()).id, r.title, r.dueAt, r.type, r.note ?? '')
   )
-  ipcMain.handle('reminders:list', async () => listReminders((await requireUser()).id))
-  ipcMain.handle('reminders:done', async (_e, id: number) => markReminderDone((await requireUser()).id, id))
-  ipcMain.handle('reminders:delete', async (_e, id: number) => deleteReminder((await requireUser()).id, id))
+  safeHandle('reminders:list', async () => listReminders((await requireUser()).id))
+  safeHandle('reminders:done', async (_e, id: number) => markReminderDone((await requireUser()).id, id))
+  safeHandle('reminders:delete', async (_e, id: number) => deleteReminder((await requireUser()).id, id))
 
   // --- Chat (AI) ---
-  ipcMain.handle('chat:send', async (_e, payload: { conversationId?: number; userText: string; images?: string[] }) => {
+  safeHandle('chat:send', async (_e, payload: { conversationId?: number; userText: string; images?: string[] }) => {
     const user = await requireUser()
     const settings = getAiSettings()
     const model = settings.model || (await getChatModel())
@@ -225,36 +243,36 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
   })
 
   // --- Email ---
-  ipcMain.handle('mail:smtp', async () => getSmtpConfig())
-  ipcMain.handle('mail:saveSmtp', async (_e, c: SmtpConfig) => {
+  safeHandle('mail:smtp', async () => getSmtpConfig())
+  safeHandle('mail:saveSmtp', async (_e, c: SmtpConfig) => {
     await saveSmtpConfig(c)
   })
-  ipcMain.handle('mail:testSmtp', async (_e, c: SmtpConfig) => testSmtp(c))
-  ipcMain.handle('mail:send', async (_e, c: SmtpConfig, draft: EmailDraft) => sendEmail(c, draft))
-  ipcMain.handle('mail:saveDraft', async (_e, draft: EmailDraft) => saveEmailDraft(draft))
-  ipcMain.handle('mail:history', async () => listEmails())
+  safeHandle('mail:testSmtp', async (_e, c: SmtpConfig) => testSmtp(c))
+  safeHandle('mail:send', async (_e, c: SmtpConfig, draft: EmailDraft) => sendEmail(c, draft))
+  safeHandle('mail:saveDraft', async (_e, draft: EmailDraft) => saveEmailDraft(draft))
+  safeHandle('mail:history', async () => listEmails())
 
   // --- WhatsApp ---
-  ipcMain.handle('wa:init', async () => {
+  safeHandle('wa:init', async () => {
     const wa = getWa()
     await wa.init()
     return wa.getState()
   })
-  ipcMain.handle('wa:state', async () => getWa().getState())
-  ipcMain.handle('wa:qr', async () => getWa().getQr())
-  ipcMain.handle('wa:chats', async () => getWa().getChats())
-  ipcMain.handle('wa:localChats', async () => listStoredChats())
-  ipcMain.handle('wa:messages', async (_e, chatId: string, limit?: number) =>
+  safeHandle('wa:state', async () => getWa().getState())
+  safeHandle('wa:qr', async () => getWa().getQr())
+  safeHandle('wa:chats', async () => getWa().getChats())
+  safeHandle('wa:localChats', async () => listStoredChats())
+  safeHandle('wa:messages', async (_e, chatId: string, limit?: number) =>
     getWa().getChatMessages(chatId, limit ?? 50)
   )
-  ipcMain.handle('wa:localMessages', async (_e, chatId?: string) => listStoredMessages(chatId))
-  ipcMain.handle('wa:send', async (_e, chatId: string, text: string) => getWa().sendMessage(chatId, text))
-  ipcMain.handle('wa:logout', async () => {
+  safeHandle('wa:localMessages', async (_e, chatId?: string) => listStoredMessages(chatId))
+  safeHandle('wa:send', async (_e, chatId: string, text: string) => getWa().sendMessage(chatId, text))
+  safeHandle('wa:logout', async () => {
     await getWa().logout()
   })
 
   // --- Notes ---
-  ipcMain.handle('notes:pick', async () => {
+  safeHandle('notes:pick', async () => {
     const win = getMainWindow()
     if (!win) return null
     const result = await dialog.showOpenDialog(win, {
@@ -263,12 +281,18 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
       properties: ['openFile']
     })
     if (result.canceled || result.filePaths.length === 0) return null
-    const filePath = result.filePaths[0]
-    const stat = await fs.stat(filePath)
-    return { filePath, name: path.basename(filePath), size: stat.size }
+    const picked = result.filePaths[0]
+    // Stage the user-selected file inside notesDir() so that all downstream
+    // reads operate on a path confined to the notes directory.
+    const stageDir = path.join(notesDir(), 'imports')
+    await fs.mkdir(stageDir, { recursive: true })
+    const staged = path.join(stageDir, `${Date.now()}_${path.basename(picked)}`)
+    await fs.copyFile(picked, staged)
+    const stat = await fs.stat(staged)
+    return { filePath: staged, name: path.basename(picked), size: stat.size }
   })
-  ipcMain.handle('notes:extract', async (_e, filePath: string) => {
-    const result = await extractPdf(filePath)
+  safeHandle('notes:extract', async (_e, filePath: string) => {
+    const result = await extractPdf(confineToNotesDir(filePath))
     return {
       mode: result.mode,
       totalChars: result.totalChars,
@@ -276,12 +300,12 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
       preview: result.pages.slice(0, 2).map((p) => p.text).join('\n').slice(0, 2000)
     }
   })
-  ipcMain.handle('notes:generate', async (_e, opts: { filePath: string; language: string }) => {
+  safeHandle('notes:generate', async (_e, opts: { filePath: string; language: string }) => {
     const settings = getAiSettings()
     const model = settings.model || (await getDefaultModel())
     if (!model) throw new Error('No Ollama model selected.')
     const result = await generateNotes({
-      filePath: opts.filePath,
+      filePath: confineToNotesDir(opts.filePath),
       model,
       language: opts.language,
       onProgress: (p) => {
@@ -290,14 +314,14 @@ export function registerIpc(getMainWindow: () => BrowserWindow | null, getWa: ()
     })
     return result
   })
-  ipcMain.handle('notes:list', async () => listNotes())
-  ipcMain.handle('notes:read', async (_e, filePath: string) => readNoteFile(filePath))
-  ipcMain.handle('notes:openFolder', async () => {
+  safeHandle('notes:list', async () => listNotes())
+  safeHandle('notes:read', async (_e, filePath: string) => readNoteFile(confineToNotesDir(filePath)))
+  safeHandle('notes:openFolder', async () => {
     await shell.openPath(notesDir())
   })
-  ipcMain.handle('notes:delete', async (_e, n: NoteRecord) => deleteNote(n.id!, n.path))
+  safeHandle('notes:delete', async (_e, n: NoteRecord) => deleteNote(n.id!, confineToNotesDir(n.path)))
 
   // --- App / misc ---
-  ipcMain.handle('app:version', async () => app.getVersion())
-  ipcMain.handle('db:path', async () => db.getDbPath())
+  safeHandle('app:version', async () => app.getVersion())
+  safeHandle('db:path', async () => db.getDbPath())
 }
