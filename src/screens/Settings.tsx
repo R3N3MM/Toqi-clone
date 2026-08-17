@@ -76,7 +76,7 @@ export default function Settings({ user, onSignOut, onRestartOnboarding, focus }
   useEffect(() => {
     if (!focus) return
     const el = document.getElementById(focus === 'wa' ? 'settings-card-wa' : 'settings-card-oauth')
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (el) el.scrollIntoView({ block: 'start' })
   }, [focus])
 
   const saveSettings = async (): Promise<void> => {

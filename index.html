@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      CSP is delivered as a response header in electron/main.ts for http(s)
+      loads, but packaged builds load via file:// where the webRequest API
+      cannot attach headers, so this meta tag is the effective enforcement.
+      `style-src 'unsafe-inline'` is required because React relies on inline
+      `style` attributes (style={{...}} props).
+    -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:11434; font-src 'self' data:"
