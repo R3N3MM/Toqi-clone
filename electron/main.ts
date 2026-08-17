@@ -15,7 +15,13 @@ let wa: WhatsAppManager | null = null
 function allowedNavigation(url: string): boolean {
   const devUrl = process.env.VITE_DEV_SERVER_URL
   if (devUrl) {
-    return url.startsWith(devUrl)
+    // Dev-mode gating: allow only same-origin navigation within the Vite
+    // server; a prefix match would let a look-alike host through.
+    try {
+      return new URL(url).origin === new URL(devUrl).origin
+    } catch {
+      return false
+    }
   }
   if (!url.startsWith('file://')) return false
   try {
