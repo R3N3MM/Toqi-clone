@@ -75,8 +75,10 @@ export default function Auth({ user, onDone }: AuthProps): JSX.Element {
     if (user && finalName && finalName !== user.name) {
       try {
         await window.toqi.auth.updateName(user.id, finalName)
-      } catch {
-        // ignore
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : ''
+        setError(msg || t('auth.saveFailed'))
+        return
       }
     }
     onDone(user ? { ...user, name: finalName } : { id: 0, email: '', name: finalName, provider: 'local', avatar: '' })

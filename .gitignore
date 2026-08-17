@@ -9,3 +9,7 @@ wa-session
 *.traineddata
 7za-wrap.obj
 *.obj
+
+# local dev helper (personal tool, not part of the repo)
+auto-sync.ps1
+coderabbit-review.txt

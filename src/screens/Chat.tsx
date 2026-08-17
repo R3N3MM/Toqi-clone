@@ -295,6 +295,7 @@ export default function Chat({ initialConversationId = null }: ChatProps): JSX.E
       <input
         ref={fileAnyRef}
         type="file"
+        accept="image/*"
         style={{ display: 'none' }}
         onChange={(e) => {
           if (e.target.files) readFiles(e.target.files)
@@ -344,7 +345,7 @@ export default function Chat({ initialConversationId = null }: ChatProps): JSX.E
                   fileAnyRef.current?.click()
                 }}
               >
-                <Icon name="file" size={18} /> {t('chat.file')}
+                <Icon name="file" size={18} /> {t('chat.image')}
               </button>
             </div>
           )}
