@@ -245,7 +245,7 @@ export const EXTRA2: Record<string, Dict> = {
     'apps.connect': 'タップして接続',
     'invite.title': '招待を共有',
     'invite.copied': '招待メッセージをコピーしました',
-    'invite.text': 'Toqiで一緒に — メッセージ、メール、メモ、リマインダーのAIアシスタントです。',
+    'invite.text': 'Toqiに参加してください — メッセージ、メール、メモ、リマインダーのためのAIアシスタントです。',
     'common.comingSoon': '近日公開',
     'chat.attach': '添付',
     'chat.gallery': 'ギャラリー',
