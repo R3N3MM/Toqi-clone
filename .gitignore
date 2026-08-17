@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-electron
+release
+*.log
+notes
+wa-session
+.DS_Store
+*.traineddata
+7za-wrap.obj
+*.obj
